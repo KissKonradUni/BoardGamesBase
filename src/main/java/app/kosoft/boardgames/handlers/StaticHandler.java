@@ -6,14 +6,24 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 
-public class IndexHandler implements HttpHandler {
+public class StaticHandler implements HttpHandler {
+    private final String filePath;
+
+    public StaticHandler(String filePath) {
+        this.filePath = filePath;
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String response = FileManager.getTextFileContent("index.html");
+        staticFileHandle(exchange, filePath);
+    }
+
+    public static void staticFileHandle(HttpExchange exchange, String filePath) throws IOException {
+        String response = FileManager.getTextFileContent(filePath);
         if (response == null) {
-            response = "404 Not Found";
+            response = FileManager.getTextFileContent("404.html");
         }
+        assert response != null;
         exchange.sendResponseHeaders(200, response.length());
         exchange.getResponseBody().write(response.getBytes());
         exchange.getResponseHeaders().set("Content-Type", "text/html");

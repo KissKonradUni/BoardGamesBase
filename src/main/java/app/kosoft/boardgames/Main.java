@@ -1,6 +1,6 @@
 package app.kosoft.boardgames;
 
-import app.kosoft.boardgames.handlers.IndexHandler;
+import app.kosoft.boardgames.handlers.*;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
@@ -13,9 +13,15 @@ public class Main {
             server = HttpServer.create();
             server.bind(new InetSocketAddress(8080), 0);
 
-            IndexHandler handler = new IndexHandler();
-            server.createContext("/", handler);
-            server.createContext("/index", handler);
+            server.createContext("/", new NotFoundHandler());
+            server.createContext("/index", new StaticHandler("index.html"));
+
+            server.createContext("/register", new RegisterHandler());
+            server.createContext("/login", new LoginHandler());
+            server.createContext("/logout", new LogoutHandler());
+
+            server.createContext("/secret", new AuthenticatedStaticHandler("secret.html"));
+            server.createContext("/static/", new URLStaticHandler());
 
             server.setExecutor(null);
             server.start();

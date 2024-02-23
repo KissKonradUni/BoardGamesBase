@@ -1,9 +1,10 @@
 package app.kosoft.boardgames;
 
-import com.sun.istack.internal.Nullable;
-
 import java.util.HashMap;
 
+/**
+ * Manages user sessions.
+ */
 public class SessionManager {
     private static final HashMap<String, User> sessions = new HashMap<>();
 
@@ -14,9 +15,21 @@ public class SessionManager {
      * @param sessionId The session ID.
      * @return The user associated with the session ID, or null if the session ID is invalid.
      */
-    @Nullable
-    public static User getUser(String sessionId) {
+    public static User getUserFromSessionID(String sessionId) {
         return sessions.get(sessionId);
+    }
+
+    /**
+     * Attempts to log in the user with the given username and password.
+     * @param username The username.
+     * @param password The password.
+     * @return The session ID if the login was successful, or null if the login failed.
+     */
+    public static String tryLogin(String username, String password) {
+        User user = UserManager.getUser(username);
+        if (user != null && user.isPasswordCorrect(password))
+            return SessionManager.createSession(user);
+        return null;
     }
 
     /**
@@ -24,7 +37,7 @@ public class SessionManager {
      * @param user The user to create a session for.
      * @return The session ID.
      */
-    public static String createSession(User user) {
+    private static String createSession(User user) {
         String sessionId = generateSessionId();
         sessions.put(sessionId, user);
         return sessionId;
@@ -32,6 +45,7 @@ public class SessionManager {
 
     /**
      * Generates a random session ID.
+     * It's a random 16-character string.
      * @return A random session ID.
      */
     private static String generateSessionId() {
@@ -42,7 +56,7 @@ public class SessionManager {
      * Logs out the user associated with the given session ID.
      * @param sessionId The session ID.
      */
-    private static void logOut(String sessionId) {
+    public static void logOut(String sessionId) {
         sessions.remove(sessionId);
     }
 

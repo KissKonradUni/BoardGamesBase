@@ -1,5 +1,9 @@
 package app.kosoft.boardgames;
 
+import com.google.common.hash.Hashing;
+
+import java.nio.charset.StandardCharsets;
+
 public class User {
     private final String username;
     private final String password;
@@ -14,6 +18,7 @@ public class User {
     }
 
     public boolean isPasswordCorrect(String password) {
-        return this.password.equals(password);
+        String hashPassword = Hashing.sha256().hashString(password, StandardCharsets.UTF_8).toString();
+        return this.password.equals(hashPassword);
     }
 }
